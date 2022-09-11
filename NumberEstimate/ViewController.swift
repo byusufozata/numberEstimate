@@ -31,7 +31,7 @@ class ViewController: UIViewController {
     
     var stars : [UIImageView] = [UIImageView]()
     var maxNumberOfAttempts : Int = 5
-    var numberOfAttempts : Int = -1
+    var numberOfAttempts : Int = 0
     var targetNumber : Int = -1
     var gameSuccessful : Bool = false
     
@@ -40,9 +40,8 @@ class ViewController: UIViewController {
     
 
     override func viewDidLoad() {
-        
-        stars = [yelloewStars1,yellowStars2,yellowStars3,yellowStars4,yellowStars5]
         super.viewDidLoad()
+        stars = [yelloewStars1,yellowStars2,yellowStars3,yellowStars4,yellowStars5]
         imageSave.isHidden = true
         imageGuess.isHidden = true
         buttonTry.isEnabled = false
@@ -56,7 +55,7 @@ class ViewController: UIViewController {
         if let t = Int(estimateNumber.text!){
             targetNumber = t
             buttonTry.isEnabled = true
-            textNumberEstimate.isEnabled = false
+            textNumberEstimate.isEnabled = true
             buttonsave.isEnabled = false
             imageSave.image = UIImage(named: "confirmation")
         }else {
@@ -65,6 +64,70 @@ class ViewController: UIViewController {
     }
     
     @IBAction func tryButtonClicked(_ sender: UIButton) {
+        
+        if gameSuccessful == true || numberOfAttempts > maxNumberOfAttempts{
+            return
+        }
+        if let enteredNumber = Int(textNumberEstimate.text!){
+            numberOfAttempts += 1
+            stars[numberOfAttempts-1].image = UIImage(named: "blackStar")
+            imageGuess.isHidden = false
+            if enteredNumber > targetNumber{
+                imageGuess.image = UIImage(named: "icons8-below-40")
+                textNumberEstimate.backgroundColor = UIColor.red
+            } else if enteredNumber < targetNumber {
+                imageGuess.image = UIImage(named: "icons8-upward-arrow-48")
+                textNumberEstimate.backgroundColor = UIColor.yellow
+            } else {
+                estimateNumber.isSecureTextEntry = false
+                conclusionLabel.text = "Succesfuly"
+                conclusionLabel.backgroundColor = UIColor.green
+                buttonsave.isEnabled = true
+                imageGuess.image = UIImage(named: "okey-hand")
+                textNumberEstimate.isSecureTextEntry = false
+                gameSuccessful = true
+                
+                var alertController = UIAlertController(title: "Congratulations", message: "correct number", preferredStyle: UIAlertController.Style.alert)
+                var okeyAction = UIAlertAction(title: "Okay", style: UIAlertAction.Style.default, handler: nil)
+                alertController.addAction(okeyAction)
+                present(alertController, animated: true, completion: nil)
+            
+                
+                return
+                
+            }
+            
+        }
+        
+        else {
+            imageGuess.isHidden = false
+            imageGuess.image = UIImage(named: "warning")
+        }
+        
+        if numberOfAttempts == maxNumberOfAttempts {
+            buttonTry.isEnabled = true
+            imageGuess.image = UIImage(named: "warning")
+            conclusionLabel.text = "game over "
+            
+            let alertController = UIAlertController(title: "Game Over", message: "you used all your rights", preferredStyle: UIAlertController.Style.alert)
+            let okeyAction = UIAlertAction(title: "Okay", style: UIAlertAction.Style.default, handler: nil)
+            alertController.addAction(okeyAction)
+            
+            let playAgainAction = UIAlertAction(title: "Try Again", style: UIAlertAction.Style.default) { [self]
+                (action: UIAlertAction) in
+                var tryAgain =  ViewController()
+            }
+            alertController.addAction(okeyAction)
+            alertController.addAction(playAgainAction)
+            
+            present(alertController, animated: true, completion: nil)
+            
+            
+            
+        }
+    
+        
+        
     }
     
     
